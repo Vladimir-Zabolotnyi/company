@@ -1,18 +1,17 @@
 package org.andersenTask.repository;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface Repository<T> {
-    T getById(Long id) throws SQLException;
+    T getById(Long id);
 
-    List<T> getAll() throws SQLException;
+    List<T> getAll();
 
-    int deleteById(Long id) throws SQLException;
+    int deleteById(Long id);
 
 
-    int insert(T entity) throws SQLException;
+    int insert(T entity);
 
-    int update(T entity) throws SQLException;
+    int update(T entity);
 
 }

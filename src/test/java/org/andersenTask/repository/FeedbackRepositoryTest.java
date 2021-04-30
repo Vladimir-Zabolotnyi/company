@@ -2,9 +2,9 @@ package org.andersenTask.repository;
 
 import org.andersenTask.entity.Feedback;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ class FeedbackRepositoryTest {
     Feedback feedback;
     Feedback feedback1;
     List<Feedback> feedbackList;
+
     @BeforeEach
     void setUp() {
         feedbackRepository = new FeedbackRepository();
@@ -37,50 +38,37 @@ class FeedbackRepositoryTest {
     }
 
     @Test
+    @Order(1)
     void insert() {
-        try {
-            assertEquals(1,feedbackRepository.insert(feedback));
-            assertEquals(1,feedbackRepository.insert(feedback1));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        assertEquals(1, feedbackRepository.insert(feedback));
     }
 
     @Test
+    @Order(2)
     void getById() {
-        try {
-            assertEquals(feedback,feedbackRepository.getById(1L));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        assertEquals(feedback, feedbackRepository.getById(1L));
     }
 
     @Test
+    @Order(3)
     void getAll() {
-        try {
-            assertEquals(feedbackList,feedbackRepository.getAll());
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        assertEquals(feedbackList, feedbackRepository.getAll());
     }
 
     @Test
-    void deleteById() throws SQLException {
-        assertEquals(1,feedbackRepository.deleteById(1L));
+    @Order(5)
+    void deleteById() {
+        assertEquals(1, feedbackRepository.deleteById(1L));
     }
 
 
-
     @Test
+    @Order(4)
     void update() {
         Feedback feedback3 = new Feedback();
         feedback3.setId(2L);
         feedback3.setDescription("desc3");
         feedback3.setDate(LocalDate.of(2021, 03, 15));
-        try {
-            assertEquals(1,feedbackRepository.update(feedback3));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        assertEquals(1, feedbackRepository.update(feedback3));
     }
 }

@@ -3,6 +3,7 @@ package org.andersenTask.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.andersenTask.entity.utils.DeveloperLevel;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ public class Employee {
     private LocalDate dateOfBirth;
     private LocalDate dateOfRecruitment;
     private Project currentProject;
-    private String developerLevel;
+    private DeveloperLevel developerLevel;
     private String levelOfEnglish;
     private String skype;
     private Feedback feedback;
