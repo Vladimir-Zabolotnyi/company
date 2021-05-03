@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SonarLintProjectSettings">
     <option name="bindingEnabled" value="true" />
-    <option name="projectKey" value="andersenTask_company" />
+    <option name="projectKey" value="org.andersenTask2:company" />
     <option name="serverId" value="sonarqube" />
   </component>
 </project>

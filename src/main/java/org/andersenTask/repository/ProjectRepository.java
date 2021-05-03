@@ -3,6 +3,7 @@ package org.andersenTask.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.andersenTask.connection.ConnectionPool;
 import org.andersenTask.connection.ConnectionPoolImpl;
+import org.andersenTask.connection.DataSource;
 import org.andersenTask.entity.Project;
 import org.andersenTask.entity.exceptions.EntityDeleteException;
 import org.andersenTask.entity.exceptions.EntityInsertException;
@@ -19,21 +20,10 @@ import java.util.List;
 @Slf4j
 public class ProjectRepository implements Repository<Project> {
 
-    ConnectionPool connectionPool;
-
-    {
-        try {
-            connectionPool = ConnectionPoolImpl.create("jdbc:postgresql://"
-                    + "127.0.0.1:5432" + "/" + "company", "postgres", "1234");
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-    }
-
     @Override
     public Project getById(Long id) {
         Project project = null;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             project = new Project();
             PreparedStatement preparedStatement = connection.prepareStatement("select * from project where id = ?");
             preparedStatement.setLong(1, id);
@@ -59,7 +49,7 @@ public class ProjectRepository implements Repository<Project> {
     @Override
     public List<Project> getAll() {
         List<Project> listOfProject = null;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             listOfProject = new ArrayList<>();
             PreparedStatement preparedStatement = connection.prepareStatement("select * from project ");
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -87,7 +77,7 @@ public class ProjectRepository implements Repository<Project> {
     @Override
     public int deleteById(Long id) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement statementUpdate = connection.prepareStatement(
                     "update employee set project_id = null where project_id = ?");
             statementUpdate.setLong(1, id);
@@ -108,7 +98,7 @@ public class ProjectRepository implements Repository<Project> {
     @Override
     public int insert(Project entity) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("insert into project(title, client, duration, methodology, project_manager, team_id) " +
                     "VALUES (?,?,?,?,?,?)");
             preparedStatement.setString(1, entity.getTitle());
@@ -130,7 +120,7 @@ public class ProjectRepository implements Repository<Project> {
     @Override
     public int update(Project entity) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("update  project set title = ?,client =?,duration=?,methodology=?,project_manager=?,team_id=? where id =?");
             preparedStatement.setString(1, entity.getTitle());
             preparedStatement.setString(2, entity.getClient());

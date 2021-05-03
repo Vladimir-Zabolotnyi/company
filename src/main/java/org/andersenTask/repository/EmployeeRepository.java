@@ -1,8 +1,8 @@
 package org.andersenTask.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.andersenTask.connection.ConnectionPool;
-import org.andersenTask.connection.ConnectionPoolImpl;
+
+import org.andersenTask.connection.DataSource;
 import org.andersenTask.entity.Employee;
 import org.andersenTask.entity.Feedback;
 import org.andersenTask.entity.Project;
@@ -23,20 +23,10 @@ import java.util.List;
 @Slf4j
 public class EmployeeRepository implements Repository<Employee> {
 
-    ConnectionPool connectionPool;
-
-    {
-        try {
-            connectionPool = ConnectionPoolImpl.create("jdbc:postgresql://" + "127.0.0.1:5432" + "/" + "company", "postgres", "1234");
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-    }
-
     @Override
     public Employee getById(Long id) {
         Employee employee = null;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     " select * from employee  e inner join" +
                             " feedback f on f.id = e.feedback_id inner join " +
@@ -92,7 +82,7 @@ public class EmployeeRepository implements Repository<Employee> {
     public List<Employee> getAll() {
         List<Employee> listOfEmployee = null;
         PreparedStatement preparedStatement;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection =  DataSource.getConnection()) {
             listOfEmployee = new ArrayList<>();
             preparedStatement = connection.prepareStatement(
                     " select * from employee  e inner join" +
@@ -149,7 +139,7 @@ public class EmployeeRepository implements Repository<Employee> {
     @Override
     public int deleteById(Long id) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection =  DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("Delete from employee e where e.id = ?");
             preparedStatement.setLong(1, id);
             rs = preparedStatement.executeUpdate();
@@ -166,7 +156,7 @@ public class EmployeeRepository implements Repository<Employee> {
     @Override
     public int insert(Employee entity) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "insert into employee( name, surname, father_name, email, phone_number, experience, date_of_birth, date_of_recruitment, developer_level, level_of_english,skype,project_id, feedback_id, team_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             preparedStatement.setString(1, entity.getName());
@@ -196,7 +186,7 @@ public class EmployeeRepository implements Repository<Employee> {
     @Override
     public int update(Employee entity) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "update employee set name = ?,surname = ?, father_name=?, email=?, phone_number=?, experience=?," +
                             " date_of_birth=?, date_of_recruitment=?, developer_level=?, level_of_english=?, skype=?," +

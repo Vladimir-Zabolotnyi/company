@@ -11,9 +11,9 @@ import java.util.List;
 @Getter
 public class ConnectionPoolImpl implements ConnectionPool {
 
-    private static int INITIAL_POOL_SIZE = 10;
-    private static int MAX_POOL_SIZE = 30;
-    private static int MAX_TIMEOUT = 5;
+    private static final int INITIAL_POOL_SIZE = 10;
+    private static final int MAX_POOL_SIZE = 30;
+    private static final int MAX_TIMEOUT = 5;
 
     private String url;
     private String user;

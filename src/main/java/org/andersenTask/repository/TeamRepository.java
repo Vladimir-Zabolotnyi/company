@@ -1,7 +1,9 @@
 package org.andersenTask.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.andersenTask.connection.ConnectionPool;
 import org.andersenTask.connection.ConnectionPoolImpl;
+import org.andersenTask.connection.DataSource;
 import org.andersenTask.entity.Employee;
 import org.andersenTask.entity.Team;
 import org.andersenTask.entity.exceptions.EntityDeleteException;
@@ -9,7 +11,6 @@ import org.andersenTask.entity.exceptions.EntityInsertException;
 import org.andersenTask.entity.exceptions.EntityNotFoundException;
 import org.andersenTask.entity.exceptions.EntityUpdateException;
 import org.andersenTask.entity.utils.DeveloperLevel;
-import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,22 +19,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class TeamRepository implements Repository<Team> {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(TeamRepository.class);
-    ConnectionPool connectionPool;
 
-    {
-        try {
-            connectionPool = ConnectionPoolImpl.create("jdbc:postgresql://" + "127.0.0.1:5432" + "/" + "company", "postgres", "1234");
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-    }
 
     @Override
     public Team getById(Long id) {
         Team team = null;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             team = new Team();
             List<Employee> listOfEmployee = new ArrayList<>();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from employee where team_id = ?");
@@ -77,7 +70,7 @@ public class TeamRepository implements Repository<Team> {
     @Override
     public List<Team> getAll() {
         List<Team> listOfTeam = null;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             listOfTeam = new ArrayList<>();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from team ");
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -123,7 +116,7 @@ public class TeamRepository implements Repository<Team> {
     @Override
     public int deleteById(Long id) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement statementUpdate = connection.prepareStatement(
                     "update employee set team_id = null where team_id = ?");
             statementUpdate.setLong(1, id);
@@ -149,7 +142,7 @@ public class TeamRepository implements Repository<Team> {
     @Override
     public int insert(Team entity) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("insert into team (name) " +
                     "values (?);");
             preparedStatement.setString(1, entity.getName());
@@ -166,7 +159,7 @@ public class TeamRepository implements Repository<Team> {
     @Override
     public int update(Team entity) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("update  team set name = ? where id =?");
             preparedStatement.setString(1, entity.getName());
             preparedStatement.setLong(2, entity.getId());

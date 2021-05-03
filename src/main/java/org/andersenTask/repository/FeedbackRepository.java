@@ -3,6 +3,7 @@ package org.andersenTask.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.andersenTask.connection.ConnectionPool;
 import org.andersenTask.connection.ConnectionPoolImpl;
+import org.andersenTask.connection.DataSource;
 import org.andersenTask.entity.Feedback;
 import org.andersenTask.entity.exceptions.EntityDeleteException;
 import org.andersenTask.entity.exceptions.EntityInsertException;
@@ -16,20 +17,12 @@ import java.util.List;
 @Slf4j
 public class FeedbackRepository implements Repository<Feedback> {
 
-    ConnectionPool connectionPool;
 
-    {
-        try {
-            connectionPool = ConnectionPoolImpl.create("jdbc:postgresql://" + "127.0.0.1:5432" + "/" + "company", "postgres", "1234");
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-    }
 
     @Override
     public Feedback getById(Long id) {
         Feedback feedback = null;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("select * from feedback  where id = ?");
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -50,7 +43,7 @@ public class FeedbackRepository implements Repository<Feedback> {
     @Override
     public List<Feedback> getAll() {
         List<Feedback> listOfFeedbacks = null;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             listOfFeedbacks = new ArrayList<>();
             PreparedStatement preparedStatement = connection.prepareStatement("select * from feedback f ");
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -73,7 +66,7 @@ public class FeedbackRepository implements Repository<Feedback> {
     @Override
     public int deleteById(Long id) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement statementUpdate = connection.prepareStatement("update employee set feedback_id = null where feedback_id = ?");
             statementUpdate.setLong(1, id);
             statementUpdate.executeUpdate();
@@ -94,7 +87,7 @@ public class FeedbackRepository implements Repository<Feedback> {
     @Override
     public int insert(Feedback entity) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("insert into feedback (description, date) " +
                     "values (?,?);");
             preparedStatement.setString(1, entity.getDescription());
@@ -112,7 +105,7 @@ public class FeedbackRepository implements Repository<Feedback> {
     @Override
     public int update(Feedback entity) {
         int rs = 0;
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("update  feedback set description = ? , date =? where id =?");
             preparedStatement.setString(1, entity.getDescription());
             preparedStatement.setDate(2, Date.valueOf(entity.getDate()));
