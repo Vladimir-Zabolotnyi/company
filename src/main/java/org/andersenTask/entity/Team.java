@@ -15,10 +15,17 @@ public class Team {
 
     @Override
     public String toString() {
-        return "Team{" +
+        String teamEmployeeList;
+        if (employeeList == null) {
+            teamEmployeeList = "";
+        } else {
+            teamEmployeeList = ", employeeList=" + employeeList;
+        }
+        String teamToSting = "Team{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", employeeList=" + employeeList +
+                teamEmployeeList +
                 '}';
+        return teamToSting;
     }
 }

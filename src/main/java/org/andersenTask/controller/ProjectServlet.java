@@ -3,7 +3,9 @@ package org.andersenTask.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.andersenTask.controller.mapper.JsonMapper;
 import org.andersenTask.entity.Employee;
+import org.andersenTask.entity.Project;
 import org.andersenTask.service.EmployeeService;
+import org.andersenTask.service.ProjectService;
 import org.andersenTask.service.TeamService;
 
 import javax.servlet.ServletException;
@@ -16,30 +18,30 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-@WebServlet("/employee")
-public class EmployeeServlet extends HttpServlet {
+@WebServlet("/project")
+public class ProjectServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
         PrintWriter printWriter = resp.getWriter();
-        JsonMapper<Employee> jsonMapper = new JsonMapper();
+        JsonMapper<Project> jsonMapper = new JsonMapper();
         if (req.getParameter("id") == null) {
-            List<Employee> employeeList = new EmployeeService().getAll();
+            List<Project> projectList = new ProjectService().getAll();
             printWriter.write("<html><body>");
             printWriter.write("<ol>");
-            for (Employee employee : employeeList) {
-                String employeeToJson =  jsonMapper.EntityToJson(employee);
+            for (Project project : projectList) {
+                String projectToJson =  jsonMapper.EntityToJson(project);
                 printWriter.write("<li>");
-                printWriter.write(employeeToJson);
+                printWriter.write(projectToJson);
                 printWriter.write("</li>");
                 printWriter.write("<br>");
             }
             printWriter.write("</ol>");
             printWriter.write("</body></html>");
         } else {
-            Employee employee = new EmployeeService().getById(Long.valueOf(req.getParameter("id")));
-            String employeeToJson =  jsonMapper.EntityToJson(employee);
-            printWriter.write(employeeToJson);
+            Project project = new ProjectService().getById(Long.valueOf(req.getParameter("id")));
+            String projectToJson =  jsonMapper.EntityToJson(project);
+            printWriter.write(projectToJson);
         }
         printWriter.close();
     }
@@ -55,9 +57,9 @@ public class EmployeeServlet extends HttpServlet {
         while ((line = reader.readLine()) != null) {
             stringBuilder.append(line);
         }
-        Employee employee = objectMapper.readValue(stringBuilder.toString(),Employee.class);
-        new EmployeeService().create(employee);
-        printWriter.write("New employee  is created");
+        Project project = objectMapper.readValue(stringBuilder.toString(),Project.class);
+        new ProjectService().create(project);
+        printWriter.write("New project  is created");
         printWriter.close();
     }
 
@@ -69,10 +71,10 @@ public class EmployeeServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Long id = Long.valueOf(req.getParameter("id"));
-        new TeamService().deleteById(id);
+        new ProjectService().deleteById(id);
         resp.setContentType("text/html");
         PrintWriter printWriter = resp.getWriter();
-        printWriter.write("Team with id= " + id + " is deleted");
+        printWriter.write("Project with id= " + id + " is deleted");
         printWriter.close();
     }
 }
