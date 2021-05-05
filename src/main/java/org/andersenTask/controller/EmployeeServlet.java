@@ -63,7 +63,19 @@ public class EmployeeServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
+        BufferedReader reader = req.getReader();
+        String line;
+        StringBuilder stringBuilder = new StringBuilder();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        PrintWriter printWriter = resp.getWriter();
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+        Employee employee = objectMapper.readValue(stringBuilder.toString(),Employee.class);
+        new EmployeeService().updateById(employee);
+        printWriter.write("Employee with id= " + employee.getId() + " is updated");
+        printWriter.close();
     }
 
     @Override

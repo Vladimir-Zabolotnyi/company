@@ -5,6 +5,7 @@ import org.andersenTask.connection.ConnectionPool;
 import org.andersenTask.connection.ConnectionPoolImpl;
 import org.andersenTask.connection.DataSource;
 import org.andersenTask.entity.Employee;
+import org.andersenTask.entity.Project;
 import org.andersenTask.entity.Team;
 import org.andersenTask.entity.exceptions.EntityDeleteException;
 import org.andersenTask.entity.exceptions.EntityInsertException;
@@ -27,6 +28,19 @@ public class TeamRepository implements Repository<Team> {
     public Team getById(Long id) {
         Team team = null;
         try (Connection connection = DataSource.getConnection()) {
+            Project project = new Project();
+            PreparedStatement preparedStatementProject = connection.prepareStatement("SELECT * from project where team_id = ?");
+            preparedStatementProject.setLong(1, id);
+            ResultSet resultSetProject = preparedStatementProject.executeQuery();
+            resultSetProject.next();
+            project.setId(resultSetProject.getLong("id"));
+            project.setTitle(resultSetProject.getString("title"));
+            project.setClient(resultSetProject.getString("client"));
+            project.setDuration(resultSetProject.getString("duration"));
+            project.setProjectManager(resultSetProject.getString("project_manager"));
+            project.setMethodology(resultSetProject.getString("methodology"));
+            resultSetProject.close();
+            preparedStatementProject.close();
             team = new Team();
             List<Employee> listOfEmployee = new ArrayList<>();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from employee where team_id = ?");
@@ -46,6 +60,8 @@ public class TeamRepository implements Repository<Team> {
                 employee.setDeveloperLevel(DeveloperLevel.valueOf(resultSet.getString("developer_level")));
                 employee.setLevelOfEnglish(resultSet.getString("level_of_english"));
                 employee.setSkype(resultSet.getString("skype"));
+                employee.setFeedback(new FeedbackRepository().getById(resultSet.getLong("feedback_id")));
+                employee.setCurrentProject(project);
                 listOfEmployee.add(employee);
             }
             resultSet.close();
@@ -69,48 +85,67 @@ public class TeamRepository implements Repository<Team> {
 
     @Override
     public List<Team> getAll() {
-        List<Team> listOfTeam = null;
+        List<Team> teamList = new ArrayList<>();
         try (Connection connection = DataSource.getConnection()) {
-            listOfTeam = new ArrayList<>();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from team ");
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                Team team = new Team();
+            PreparedStatement preparedStatement1 = connection.prepareStatement("SELECT * from team ");
+            ResultSet resultSet1 = preparedStatement1.executeQuery();
+            while (resultSet1.next()) {
+                Project project = new Project();
+                PreparedStatement preparedStatementProject = connection.prepareStatement("SELECT * from project where team_id = ?");
+                preparedStatementProject.setLong(1, resultSet1.getLong("id"));
+                ResultSet resultSetProject = preparedStatementProject.executeQuery();
+                resultSetProject.next();
+                project.setId(resultSetProject.getLong("id"));
+                project.setTitle(resultSetProject.getString("title"));
+                project.setClient(resultSetProject.getString("client"));
+                project.setDuration(resultSetProject.getString("duration"));
+                project.setProjectManager(resultSetProject.getString("project_manager"));
+                project.setMethodology(resultSetProject.getString("methodology"));
+                resultSetProject.close();
+                preparedStatementProject.close();
+                Team team = null;
+                team = new Team();
                 List<Employee> listOfEmployee = new ArrayList<>();
-                PreparedStatement preparedStatement1 = connection.prepareStatement("SELECT * from employee where team_id = ?");
-                preparedStatement1.setLong(1, resultSet.getLong("id"));
-                ResultSet resultSet1 = preparedStatement.executeQuery();
-                while (resultSet1.next()) {
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * from employee where team_id = ?");
+                preparedStatement.setLong(1, resultSet1.getLong("id"));
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
                     Employee employee = new Employee();
-                    employee.setId(resultSet1.getLong("id"));
-                    employee.setName(resultSet1.getString("name"));
-                    employee.setSurname(resultSet1.getString(3));
-                    employee.setFatherName(resultSet1.getString("father_name"));
-                    employee.setEmail(resultSet1.getString("email"));
-                    employee.setPhoneNumber(resultSet1.getString("phone_number"));
-                    employee.setExperience(resultSet1.getString("experience"));
-                    employee.setDateOfBirth(resultSet1.getDate("date_of_birth").toLocalDate());
-                    employee.setDateOfRecruitment(resultSet1.getDate("date_of_recruitment").toLocalDate());
-                    employee.setDeveloperLevel(DeveloperLevel.valueOf(resultSet1.getString("developer_level")));
-                    employee.setLevelOfEnglish(resultSet1.getString("level_of_english"));
-                    employee.setSkype(resultSet1.getString("skype"));
+                    employee.setId(resultSet.getLong("id"));
+                    employee.setName(resultSet.getString("name"));
+                    employee.setSurname(resultSet.getString("surname"));
+                    employee.setFatherName(resultSet.getString("father_name"));
+                    employee.setEmail(resultSet.getString("email"));
+                    employee.setPhoneNumber(resultSet.getString("phone_number"));
+                    employee.setExperience(resultSet.getString("experience"));
+                    employee.setDateOfBirth(resultSet.getDate("date_of_birth").toLocalDate());
+                    employee.setDateOfRecruitment(resultSet.getDate("date_of_recruitment").toLocalDate());
+                    employee.setDeveloperLevel(DeveloperLevel.valueOf(resultSet.getString("developer_level")));
+                    employee.setLevelOfEnglish(resultSet.getString("level_of_english"));
+                    employee.setSkype(resultSet.getString("skype"));
+                    employee.setCurrentProject(project);
+                    employee.setFeedback(new FeedbackRepository().getById(resultSet.getLong("feedback_id")));
                     listOfEmployee.add(employee);
                 }
-                team.setId(resultSet.getLong("id"));
-                team.setName(resultSet.getString("name"));
-                team.setEmployeeList(listOfEmployee);
-                listOfTeam.add(team);
-                resultSet1.close();
-                preparedStatement1.close();
+                resultSet.close();
+                preparedStatement.close();
+                PreparedStatement preparedStatement2 = connection.prepareStatement("Select * from team where id = ?");
+                preparedStatement2.setLong(1, resultSet1.getLong("id"));
+                ResultSet resultSet2 = preparedStatement2.executeQuery();
+                if (resultSet2.next()) {
+                    team.setId(resultSet2.getLong("id"));
+                    team.setName(resultSet2.getString("name"));
+                    team.setEmployeeList(listOfEmployee);
+                    resultSet2.close();
+                    preparedStatement2.close();
+                } else throw new EntityNotFoundException("team not found with id= " + resultSet2.getLong("id"));
+                teamList.add(team);
             }
-            if (listOfTeam.isEmpty()) throw new EntityNotFoundException("project not found");
-            resultSet.close();
-            preparedStatement.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        log.info("teams were found");
-        return listOfTeam;
+        log.info("teams were got");
+        return teamList;
     }
 
     @Override

@@ -1,8 +1,6 @@
 package org.andersenTask.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.andersenTask.connection.ConnectionPool;
-import org.andersenTask.connection.ConnectionPoolImpl;
 import org.andersenTask.connection.DataSource;
 import org.andersenTask.entity.Feedback;
 import org.andersenTask.entity.exceptions.EntityDeleteException;

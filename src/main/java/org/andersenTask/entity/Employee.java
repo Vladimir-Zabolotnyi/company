@@ -29,5 +29,23 @@ public class Employee {
     private String skype;
     private Feedback feedback;
 
-
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", fatherName='" + fatherName + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", experience='" + experience + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", dateOfRecruitment=" + dateOfRecruitment +
+                ", currentProject=" + currentProject +
+                ", developerLevel=" + developerLevel +
+                ", levelOfEnglish='" + levelOfEnglish + '\'' +
+                ", skype='" + skype + '\'' +
+                ", feedback=" + feedback +
+                '}';
+    }
 }
