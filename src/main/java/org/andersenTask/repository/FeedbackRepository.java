@@ -87,7 +87,7 @@ public class FeedbackRepository implements Repository<Feedback> {
         int rs = 0;
         try (Connection connection = DataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("insert into feedback (description, date) " +
-                    "values (?,?);");
+                    "values (?,?)");
             preparedStatement.setString(1, entity.getDescription());
             preparedStatement.setDate(2, Date.valueOf(entity.getDate()));
             rs = preparedStatement.executeUpdate();
