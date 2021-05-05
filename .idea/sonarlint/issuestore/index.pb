@@ -23,8 +23,6 @@ p
 @src/main/java/org/andersenTask/controller/mapper/JsonMapper.java,a\b\ab7257f7aba04f21213ee389f9284232fdc296d1
 n
 >src/main/java/org/andersenTask/controller/FeedbackServlet.java,6\2\627a67a9c1fa257ccd1047669b9204dc93caf315
-7
-pom.xml,4\4\442292b8a7efeabbe4cc176709b833b1792140ec
 j
 :src/main/java/org/andersenTask/controller/TeamServlet.java,0\a\0a39c628a3acad7a54c841bf6ed8b22129cb6b1c
 b
